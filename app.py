@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 import sys
 
@@ -5,13 +7,16 @@ from PIL import Image
 from os import listdir
 from os.path import isfile, join
 
+W1 = np.random.randint(-10, 10, (10, 400)) / 10
+W2 = np.random.randint(-10, 10, (10,)) / 10
+
 
 def f_activation(x):
     return 2 / (1 + np.exp(-x)) - 1
 
 
 def der_f_activation(x):
-    return 0.5 * (1 + f_activation(x)) * (1 - f_activation(x))
+    return 0.5 * (1 - x) * (1 + x)
 
 
 def go_forward(inp):
@@ -27,22 +32,28 @@ def go_forward(inp):
 def train(epoch, true):
     global W1, W2
     lmbd = 0.01
-    N = 1000
+    N = 3000000
     count = len(epoch)
+    i = 0
     for i in range(N):
+        if i % 1000 == 0:
+            print(i)
         index = np.random.randint(0, count)
         x = epoch[index]
         x_true = true[index]
         y, out = go_forward(x)
         e = y - x_true
         delta = e * der_f_activation(y)
-        W2[0] = W2[0] - lmbd * delta * out[0]
-        W2[1] = W2[1] - lmbd * delta * out[1]
+        for j in range(W2.shape[0]):
+
+            W2[j] = W2[j] - lmbd * delta * out[j]
 
         delta2 = W2 * delta * der_f_activation(out)
 
-        W1[0, :] = W1[0, :] - np.array(x) * delta2[0] * lmbd
-        W1[1, :] = W1[1, :] - np.array(x) * delta2[1] * lmbd
+        for j in range(W1.shape[0]):
+
+            W1[j, :] = W1[j, :] - np.array(x) * delta2[j] * lmbd
+        i += 1
 
 
 
@@ -55,41 +66,46 @@ def train(epoch, true):
 if __name__ == '__main__':
     epoch = []
     true_output = []
-    directories = ['Latin/' + chr(i) + '/' for i in range(65, 70)]
+    directories = ['Latin/' + chr(i) + '/' for i in range(65, 91)]
     for dir in directories:
         print(dir)
-        files = [f for f in listdir(dir) if isfile(join(dir, f))][:30]
+        files = [f for f in listdir(dir) if isfile(join(dir, f))]
         i = 0
         for file in files:
-            print(f'{i}/{len(files)}')
-            image = Image.open(f'{dir}{file}')
+            if i % 100 == 0:
+                print(f'{i}/{len(files)}')
+            image = Image.open(f'{dir}{file}').resize((20, 20))
             image_array = np.asarray(image).tolist()
+
+
             res = []
             for x in image_array:
                 res.extend(x if isinstance(x, list) else [x])
             res1 = []
             for x in res:
-                res1.extend(x if isinstance(x, list) else [x])
+                res1.append(0 if x == [0, 0, 0, 0] else 1)
+
+
             epoch.append(res1)
             true_output.append(-1 + (ord(dir[len(dir) - 2]) - 65) / 12.5)
             i += 1
+
     print(true_output)
-    # W1 = np.array([list(np.random.rand(len(epoch[0]))) for i in range(10)])
-    # print(W1.shape)
-    W1 = np.random.randint(-7, 7, (10, 309136)) / 10
-    W2 = np.random.randint(-7, 7, (10, )) / 10
+    print(W1.shape[0])
+    print(W2.shape[0])
+    print('нач')
     print(W1, W2)
-    # print(W2.shape)
 
 
     # epoch = [(-1, -1, -1, [1, 0]), (-1, -1, 1, [2, 2]), (-1, 1, -1, [0, 0]), (-1, 1, 1, [3, 3]),
     #          (1, -1, -1, [0, 1]), (1, -1, 1, [1, 0]), (1, 1, -1, [0, 0]), (1, 1, 1, [0, 0])]
 
     train(epoch, true_output)
-
+    print('после обучения')
+    print(W1, W2)
     print('Обучение завершилось')
 
-    example = Image.open('5a31f049f39bc.png')
+    example = Image.open('58ac478c3b034.png').resize((20, 20))
     # example = Image.open('5a6735484b979.png')
     example = np.asarray(example).tolist()
     res = []
@@ -97,11 +113,36 @@ if __name__ == '__main__':
         res.extend(x if isinstance(x, list) else [x])
     example = []
     for x in res:
-        example.extend(x if isinstance(x, list) else [x])
+        example.append(0 if x == [0, 0, 0, 0] else 1)
 
-    print(len(example))
 
-    print(go_forward(example))
+
+    example1 = Image.open('58be82f2939fc.png').resize((20, 20))
+    # example = Image.open('5a6735484b979.png')
+    example1 = np.asarray(example1).tolist()
+    res = []
+    for x in example1:
+        res.extend(x if isinstance(x, list) else [x])
+    example1 = []
+    for x in res:
+        example1.append(0 if x == [0, 0, 0, 0] else 1)
+
+    print('Пример:')
+
+    print(go_forward(example)[0])
+    print(go_forward(example1)[0])
+
+    print(W1, W2)
+
+
+
+    weights = {
+        'W1': W1.tolist(),
+        'W2': W2.tolist(),
+    }
+
+    with open('weights.json', 'w') as outfile:
+        json.dump(weights, outfile, indent=4)
 
 
 
