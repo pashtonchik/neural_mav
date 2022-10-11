@@ -7,8 +7,9 @@ from PIL import Image
 from os import listdir
 from os.path import isfile, join
 
-W1 = np.random.randint(-10, 10, (10, 400)) / 10
-W2 = np.random.randint(-10, 10, (10,)) / 10
+W1 = np.random.randint(-10, 10, (20, 400)) / 10
+W2 = np.random.randint(-10, 10, (20,)) / 10
+N = 0
 
 
 def f_activation(x):
@@ -32,13 +33,14 @@ def go_forward(inp):
 def train(epoch, true):
     global W1, W2
     lmbd = 0.01
-    N = 3000000
+    # N = 10000
     count = len(epoch)
     i = 0
     for i in range(N):
         if i % 1000 == 0:
             print(i)
-        index = np.random.randint(0, count)
+        # index = np.random.randint(0, count)
+        index = i
         x = epoch[index]
         x_true = true[index]
         y, out = go_forward(x)
@@ -58,11 +60,6 @@ def train(epoch, true):
 
 
 
-
-
-
-
-
 if __name__ == '__main__':
     epoch = []
     true_output = []
@@ -70,6 +67,7 @@ if __name__ == '__main__':
     for dir in directories:
         print(dir)
         files = [f for f in listdir(dir) if isfile(join(dir, f))]
+        N += len(files)
         i = 0
         for file in files:
             if i % 100 == 0:
@@ -105,7 +103,7 @@ if __name__ == '__main__':
     print(W1, W2)
     print('Обучение завершилось')
 
-    example = Image.open('58ac478c3b034.png').resize((20, 20))
+    example = Image.open('a.png').resize((20, 20))
     # example = Image.open('5a6735484b979.png')
     example = np.asarray(example).tolist()
     res = []
@@ -117,7 +115,7 @@ if __name__ == '__main__':
 
 
 
-    example1 = Image.open('58be82f2939fc.png').resize((20, 20))
+    example1 = Image.open('z.png').resize((20, 20))
     # example = Image.open('5a6735484b979.png')
     example1 = np.asarray(example1).tolist()
     res = []
