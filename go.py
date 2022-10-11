@@ -9,11 +9,11 @@ W2 = json.load(open("weights.json", "r"))['W2']
 
 
 def f_activation(x):
-    return 2 / (1 + np.exp(-x)) - 1
+    return 1 / (1 + np.exp(-x))
 
 
 def der_f_activation(x):
-    return 0.5 * (1 - x) * (1 + x)
+    return f_activation(x) * (1 - f_activation(x))
 
 
 def go_forward(inp):
@@ -40,3 +40,11 @@ if __name__ == "__main__":
     print('Пример:')
 
     print(go_forward(example)[0])
+    answer = go_forward(example)[0]
+    max1 = 0
+    index = 0
+    for i in range(len(answer)):
+        if answer[i] > max1:
+            max1 = answer[i]
+            index = i
+    print(chr(index + 65))

@@ -8,16 +8,24 @@ from os import listdir
 from os.path import isfile, join
 
 W1 = np.random.randint(-10, 10, (20, 400)) / 10
-W2 = np.random.randint(-10, 10, (20,)) / 10
+for w in W1:
+    for w1 in w:
+        if w1 == 0:
+            w1 = 0.1
+W2 = np.random.randint(-10, 10, (26, 20)) / 10
+for w in W2:
+    for w1 in w:
+        if w1 == 0:
+            w1 = 0.1
 N = 0
 
 
 def f_activation(x):
-    return 2 / (1 + np.exp(-x)) - 1
+    return 1 / (1 + np.exp(-x))
 
 
 def der_f_activation(x):
-    return 0.5 * (1 - x) * (1 + x)
+    return f_activation(x) * (1 - f_activation(x))
 
 
 def go_forward(inp):
@@ -26,34 +34,46 @@ def go_forward(inp):
 
     s = np.dot(W2, out)
     y = f_activation(s)
-
+    # print(y.shape)
+    # print(out.shape)
     return y, out
 
 
 def train(epoch, true):
     global W1, W2
     lmbd = 0.01
-    # N = 10000
+    N = 50000
     count = len(epoch)
     i = 0
     for i in range(N):
         if i % 1000 == 0:
             print(i)
-        # index = np.random.randint(0, count)
-        index = i
+        index = np.random.randint(0, count)
+        # index = i
         x = epoch[index]
         x_true = true[index]
         y, out = go_forward(x)
         e = y - x_true
         delta = e * der_f_activation(y)
         for j in range(W2.shape[0]):
+            # W2[j, :] = W2[j, :] - np.array(x) * delta[j] * lmbd
+            # print(W2.shape)
+            # print(out.shape)
+            # print(delta.shape)
+            # print(W2[j, :].shape)
+            W2[j, :] = W2[j, :] - lmbd * delta[j] * out
 
-            W2[j] = W2[j] - lmbd * delta * out[j]
+        # print(W2.shape)
+        # print(out.shape)
+        # print(delta.shape)
 
-        delta2 = W2 * delta * der_f_activation(out)
+
 
         for j in range(W1.shape[0]):
-
+            delta2 = W2[j, :] * delta[j] * der_f_activation(out)
+            # print(W1.shape)
+            # print(np.array(x).shape)
+            # print(delta2.shape)
             W1[j, :] = W1[j, :] - np.array(x) * delta2[j] * lmbd
         i += 1
 
@@ -85,7 +105,10 @@ if __name__ == '__main__':
 
 
             epoch.append(res1)
-            true_output.append(-1 + (ord(dir[len(dir) - 2]) - 65) / 12.5)
+            # true_output.append((ord(dir[len(dir) - 2]) - 65) / 25)
+            # true_output.append(ord(dir[len(dir) - 2]) / 100)
+            true_output.append(np.zeros((26, ), dtype=float))
+            true_output[i][ord(dir[len(dir) - 2]) - 65] = 1.
             i += 1
 
     print(true_output)
