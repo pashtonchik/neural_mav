@@ -42,7 +42,7 @@ def go_forward(inp):
 def train(epoch, true):
     global W1, W2
     lmbd = 0.01
-    N = 50000
+    N = 30000
     count = len(epoch)
     i = 0
     for i in range(N):
@@ -56,25 +56,13 @@ def train(epoch, true):
         e = y - x_true
         delta = e * der_f_activation(y)
         for j in range(W2.shape[0]):
-            # W2[j, :] = W2[j, :] - np.array(x) * delta[j] * lmbd
-            # print(W2.shape)
-            # print(out.shape)
-            # print(delta.shape)
-            # print(W2[j, :].shape)
             W2[j, :] = W2[j, :] - lmbd * delta[j] * out
 
-        # print(W2.shape)
-        # print(out.shape)
-        # print(delta.shape)
-
-
-
         for j in range(W1.shape[0]):
-            delta2 = W2[j, :] * delta[j] * der_f_activation(out)
-            # print(W1.shape)
-            # print(np.array(x).shape)
-            # print(delta2.shape)
-            W1[j, :] = W1[j, :] - np.array(x) * delta2[j] * lmbd
+
+            sigma = sum(W2[:, j] * delta)
+            delta2 = sigma * der_f_activation(sum(x[j] * W1[j, :]))
+            W1[j, :] = W1[j, :] - np.array(x) * delta2 * lmbd
         i += 1
 
 

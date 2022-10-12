@@ -28,7 +28,7 @@ def go_forward(inp):
 
 
 if __name__ == "__main__":
-    example = Image.open('o.png').resize((20, 20))
+    example = Image.open('z1.png').resize((20, 20))
     example = np.asarray(example).tolist()
     res = []
     for x in example:
@@ -48,3 +48,7 @@ if __name__ == "__main__":
             max1 = answer[i]
             index = i
     print(chr(index + 65))
+    true = np.zeros((26, ), dtype=float)
+    true[ord('Z') - 65] = 1.
+    print(true)
+
