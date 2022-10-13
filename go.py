@@ -28,7 +28,7 @@ def go_forward(inp):
 
 
 if __name__ == "__main__":
-    example = Image.open('z1.png').resize((20, 20))
+    example = Image.open('a.png').resize((20, 20))
     example = np.asarray(example).tolist()
     res = []
     for x in example:

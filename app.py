@@ -7,18 +7,17 @@ from PIL import Image
 from os import listdir
 from os.path import isfile, join
 
-W1 = np.random.randint(-10, 10, (20, 400)) / 10
+W1 = np.random.randint(0, 10, (20, 400)) / 10
 for w in W1:
     for w1 in w:
         if w1 == 0:
-            w1 = 0.1
-W2 = np.random.randint(-10, 10, (26, 20)) / 10
+            w1 = 0.5
+W2 = np.random.randint(0, 10, (26, 20)) / 10
 for w in W2:
     for w1 in w:
         if w1 == 0:
-            w1 = 0.1
+            w1 = 0.5
 N = 0
-
 
 def f_activation(x):
     return 1 / (1 + np.exp(-x))
@@ -42,13 +41,14 @@ def go_forward(inp):
 def train(epoch, true):
     global W1, W2
     lmbd = 0.01
-    N = 30000
+    N = 300000
     count = len(epoch)
     i = 0
     for i in range(N):
         if i % 1000 == 0:
             print(i)
         index = np.random.randint(0, count)
+        print(index)
         # index = i
         x = epoch[index]
         x_true = true[index]
@@ -56,16 +56,13 @@ def train(epoch, true):
         e = y - x_true
         delta = e * der_f_activation(y)
         for j in range(W2.shape[0]):
-            W2[j, :] = W2[j, :] - lmbd * delta[j] * out
+            W2[j] -= lmbd * delta[j] * out
 
         for j in range(W1.shape[0]):
-
             sigma = sum(W2[:, j] * delta)
-            delta2 = sigma * der_f_activation(sum(x[j] * W1[j, :]))
-            W1[j, :] = W1[j, :] - np.array(x) * delta2 * lmbd
+            delta2 = sigma * der_f_activation(out[j])
+            W1[j] -= lmbd * delta2 * np.array(x)
         i += 1
-
-
 
 
 if __name__ == '__main__':
@@ -99,11 +96,11 @@ if __name__ == '__main__':
             true_output[i][ord(dir[len(dir) - 2]) - 65] = 1.
             i += 1
 
-    print(true_output)
-    print(W1.shape[0])
-    print(W2.shape[0])
-    print('нач')
-    print(W1, W2)
+    # print(true_output)
+    # print(W1.shape[0])
+    # print(W2.shape[0])
+    # print('нач')
+    # print(W1, W2)
 
 
     # epoch = [(-1, -1, -1, [1, 0]), (-1, -1, 1, [2, 2]), (-1, 1, -1, [0, 0]), (-1, 1, 1, [3, 3]),
