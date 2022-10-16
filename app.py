@@ -7,6 +7,11 @@ from PIL import Image
 from os import listdir
 from os.path import isfile, join
 
+
+# W1 = json.load(open("weights.json", "r"))['W1']
+# W1 = np.array(W1)
+# # W2 = json.load(open("weights.json", "r"))['W2']
+# W2 = np.array(W2)
 W1 = np.random.randint(0, 10, (20, 400)) / 10
 for w in W1:
     for w1 in w:
@@ -41,28 +46,26 @@ def go_forward(inp):
 def train(epoch, true):
     global W1, W2
     lmbd = 0.01
-    N = 300000
+    N = 500
     count = len(epoch)
     i = 0
     for i in range(N):
-        if i % 1000 == 0:
-            print(i)
-        index = np.random.randint(0, count)
-        print(index)
-        # index = i
-        x = epoch[index]
-        x_true = true[index]
-        y, out = go_forward(x)
-        e = y - x_true
-        delta = e * der_f_activation(y)
-        for j in range(W2.shape[0]):
-            W2[j] -= lmbd * delta[j] * out
+        for k in range(len(epoch)):
+            index = k
+            if index % 1000 == 0:
+                print(i, ' ', index)
+            x = epoch[index]
+            x_true = true[index]
+            y, out = go_forward(x)
+            e = y - x_true
+            delta = e * der_f_activation(y)
+            for j in range(W2.shape[0]):
+                W2[j] -= lmbd * delta[j] * out
 
-        for j in range(W1.shape[0]):
-            sigma = sum(W2[:, j] * delta)
-            delta2 = sigma * der_f_activation(out[j])
-            W1[j] -= lmbd * delta2 * np.array(x)
-        i += 1
+            for j in range(W1.shape[0]):
+                sigma = sum(W2[:, j] * delta)
+                delta2 = sigma * der_f_activation(out[j])
+                W1[j] -= lmbd * delta2 * np.array(x)
 
 
 if __name__ == '__main__':
@@ -93,7 +96,7 @@ if __name__ == '__main__':
             # true_output.append((ord(dir[len(dir) - 2]) - 65) / 25)
             # true_output.append(ord(dir[len(dir) - 2]) / 100)
             true_output.append(np.zeros((26, ), dtype=float))
-            true_output[i][ord(dir[len(dir) - 2]) - 65] = 1.
+            true_output[-1][ord(dir[len(dir) - 2]) - 65] = 1.
             i += 1
 
     # print(true_output)
@@ -105,13 +108,13 @@ if __name__ == '__main__':
 
     # epoch = [(-1, -1, -1, [1, 0]), (-1, -1, 1, [2, 2]), (-1, 1, -1, [0, 0]), (-1, 1, 1, [3, 3]),
     #          (1, -1, -1, [0, 1]), (1, -1, 1, [1, 0]), (1, 1, -1, [0, 0]), (1, 1, 1, [0, 0])]
-
+    print(len(epoch))
     train(epoch, true_output)
     print('после обучения')
     print(W1, W2)
     print('Обучение завершилось')
 
-    example = Image.open('a.png').resize((20, 20))
+    example = Image.open('test/a.png').resize((20, 20))
     # example = Image.open('5a6735484b979.png')
     example = np.asarray(example).tolist()
     res = []
@@ -123,7 +126,7 @@ if __name__ == '__main__':
 
 
 
-    example1 = Image.open('z.png').resize((20, 20))
+    example1 = Image.open('test/z.png').resize((20, 20))
     # example = Image.open('5a6735484b979.png')
     example1 = np.asarray(example1).tolist()
     res = []
@@ -138,7 +141,6 @@ if __name__ == '__main__':
     print(go_forward(example)[0])
     print(go_forward(example1)[0])
 
-    print(W1, W2)
 
 
 

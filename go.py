@@ -1,19 +1,10 @@
 import json
-
-import numpy as np
 from PIL import Image
+import matplotlib.pyplot as plt
+import numpy as np
 
-from app import go_forward
-W1 = json.load(open("weights.json", "r"))['W1']
-W2 = json.load(open("weights.json", "r"))['W2']
-
-
-def f_activation(x):
-    return 1 / (1 + np.exp(-x))
-
-
-def der_f_activation(x):
-    return f_activation(x) * (1 - f_activation(x))
+from app import f_activation
+from app import der_f_activation
 
 
 def go_forward(inp):
@@ -25,10 +16,11 @@ def go_forward(inp):
 
     return y, out
 
-
+W1 = json.load(open("weights.json", "r"))['W1']
+W2 = json.load(open("weights.json", "r"))['W2']
 
 if __name__ == "__main__":
-    example = Image.open('a.png').resize((20, 20))
+    example = Image.open('test/o.png').resize((20, 20))
     example = np.asarray(example).tolist()
     res = []
     for x in example:
@@ -48,7 +40,16 @@ if __name__ == "__main__":
             max1 = answer[i]
             index = i
     print(chr(index + 65))
-    true = np.zeros((26, ), dtype=float)
-    true[ord('Z') - 65] = 1.
-    print(true)
 
+    fig, ax = plt.subplots()
+
+    x = np.array([chr(i) for i in range(65, 91)])
+    y = np.array(answer)
+    ax.bar(x, y)
+
+    ax.set_facecolor('seashell')
+    fig.set_facecolor('floralwhite')
+    fig.set_figwidth(12)  # ширина Figure
+    fig.set_figheight(6)  # высота Figure
+
+    plt.show()
