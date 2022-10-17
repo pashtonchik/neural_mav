@@ -4,8 +4,8 @@ from os.path import isfile, join
 import numpy as np
 from PIL import Image
 
-W1 = json.load(open("weights_200.json", "r"))['W1']
-W2 = json.load(open("weights_200.json", "r"))['W2']
+W1 = json.load(open("weights_300.json", "r"))['W1']
+W2 = json.load(open("weights_300.json", "r"))['W2']
 
 def f_activation(x):
     return 1 / (1 + np.exp(-x))

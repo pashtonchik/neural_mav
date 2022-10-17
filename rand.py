@@ -5,7 +5,7 @@ from os.path import isfile, join
 from os import listdir
 
 
-directories = ['dataset_400/' + chr(i) + '/' for i in range(65, 91)]
+directories = ['dataset_100/' + chr(i) + '/' for i in range(65, 91)]
 for dir in directories:
     print(dir)
     files = [f for f in listdir(dir) if isfile(join(dir, f))]

@@ -45,7 +45,7 @@ def go_forward(inp):
 def train(epoch, true):
     global W1, W2
     lmbd = 0.01
-    N = 1000000
+    N = 450000
     count = len(epoch)
     i = 0
     for i in range(N):
@@ -69,7 +69,7 @@ def train(epoch, true):
 if __name__ == '__main__':
     epoch = []
     true_output = []
-    directories = ['dataset_200/' + chr(i) + '/' for i in range(65, 91)]
+    directories = ['dataset_300/' + chr(i) + '/' for i in range(65, 91)]
     for dir in directories:
         print(dir)
         files = [f for f in listdir(dir) if isfile(join(dir, f))]
@@ -147,7 +147,7 @@ if __name__ == '__main__':
         'W2': W2.tolist(),
     }
 
-    with open('weights_200.json', 'w') as outfile:
+    with open('weights_300.json', 'w') as outfile:
         json.dump(weights, outfile, indent=4)
     print(len(epoch))
 
