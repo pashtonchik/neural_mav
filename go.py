@@ -16,11 +16,11 @@ def go_forward(inp):
 
     return y, out
 
-W1 = json.load(open("weights.json", "r"))['W1']
-W2 = json.load(open("weights.json", "r"))['W2']
+W1 = json.load(open("weights_100.json", "r"))['W1']
+W2 = json.load(open("weights_100.json", "r"))['W2']
 
 if __name__ == "__main__":
-    example = Image.open('test/o.png').resize((20, 20))
+    example = Image.open('test/i.png').resize((20, 20))
     example = np.asarray(example).tolist()
     res = []
     for x in example:

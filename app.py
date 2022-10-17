@@ -7,7 +7,6 @@ from PIL import Image
 from os import listdir
 from os.path import isfile, join
 
-
 # W1 = json.load(open("weights.json", "r"))['W1']
 # W1 = np.array(W1)
 # # W2 = json.load(open("weights.json", "r"))['W2']
@@ -46,39 +45,38 @@ def go_forward(inp):
 def train(epoch, true):
     global W1, W2
     lmbd = 0.01
-    N = 500
+    N = 1000000
     count = len(epoch)
     i = 0
     for i in range(N):
-        for k in range(len(epoch)):
-            index = k
-            if index % 1000 == 0:
-                print(i, ' ', index)
-            x = epoch[index]
-            x_true = true[index]
-            y, out = go_forward(x)
-            e = y - x_true
-            delta = e * der_f_activation(y)
-            for j in range(W2.shape[0]):
-                W2[j] -= lmbd * delta[j] * out
+        index = np.random.randint(0, count)
+        if i % 1000 == 0:
+            print(i)
+        x = epoch[index]
+        x_true = true[index]
+        y, out = go_forward(x)
+        e = y - x_true
+        delta = e * der_f_activation(y)
+        for j in range(W2.shape[0]):
+            W2[j] -= lmbd * delta[j] * out
 
-            for j in range(W1.shape[0]):
-                sigma = sum(W2[:, j] * delta)
-                delta2 = sigma * der_f_activation(out[j])
-                W1[j] -= lmbd * delta2 * np.array(x)
+        for j in range(W1.shape[0]):
+            sigma = sum(W2[:, j] * delta)
+            delta2 = sigma * der_f_activation(out[j])
+            W1[j] -= lmbd * delta2 * np.array(x)
 
 
 if __name__ == '__main__':
     epoch = []
     true_output = []
-    directories = ['dataset_400/' + chr(i) + '/' for i in range(65, 91)]
+    directories = ['dataset_200/' + chr(i) + '/' for i in range(65, 91)]
     for dir in directories:
         print(dir)
         files = [f for f in listdir(dir) if isfile(join(dir, f))]
         N += len(files)
         i = 0
         for file in files:
-            if i % 100 == 0:
+            if i % 50 == 0:
                 print(f'{i}/{len(files)}')
             image = Image.open(f'{dir}{file}').resize((20, 20))
             image_array = np.asarray(image).tolist()
@@ -149,8 +147,9 @@ if __name__ == '__main__':
         'W2': W2.tolist(),
     }
 
-    with open('weights.json', 'w') as outfile:
+    with open('weights_200.json', 'w') as outfile:
         json.dump(weights, outfile, indent=4)
+    print(len(epoch))
 
 
 
